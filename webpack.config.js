@@ -4,6 +4,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ImageminWebpackPlugin = require('imagemin-webpack-plugin').default;
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, arg) => {
   console.log(`mode: ${arg.mode}`);
@@ -57,6 +58,14 @@ module.exports = (env, arg) => {
         },{
           loader: 'sass-loader'
         }]
+      },{
+        test: /\.ejs$/,
+        use: {
+          loader: 'ejs-compiled-loader',
+          options: {
+            htmlmin: false
+          }
+        }
       }]
     },
     resolve: {
@@ -83,6 +92,10 @@ module.exports = (env, arg) => {
       }]),
       new ImageminWebpackPlugin({
         test: /\.(jpe?g|png|gif|svg)$/i
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template : 'src/html/index.ejs'
       })
     ]
   };
