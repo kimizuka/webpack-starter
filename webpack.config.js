@@ -4,15 +4,14 @@ const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ImageminWebpackPlugin = require('imagemin-webpack-plugin').default;
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, arg) => {
-  console.log(`mode: ${arg.mode}`);
-
   const isProduction = arg.mode === 'production';
 
   return {
     entry: {
-      index : [
+      index: [
         path.join(__dirname, 'src/js/index.ts'),
         path.join(__dirname, 'src/css/index.scss')
       ]
@@ -52,7 +51,9 @@ module.exports = (env, arg) => {
         },{
           loader: 'postcss-loader',
           options: {
-            plugins: [require('autoprefixer')]
+            postcssOptions: {
+              plugins: [require('autoprefixer')]
+            }
           }
         },{
           loader: 'sass-loader'
@@ -60,7 +61,7 @@ module.exports = (env, arg) => {
       }]
     },
     resolve: {
-      extensions: [".ts"]
+      extensions: ['.ts', '.js']
     },
     optimization: {
       minimizer: [
@@ -77,12 +78,18 @@ module.exports = (env, arg) => {
       new MiniCssExtractPlugin({
         filename: 'css/[name].bundle.css',
       }),
-      new CopyWebpackPlugin([{
-        from: 'src/img',
-        to: 'img'
-      }]),
+      new CopyWebpackPlugin({
+        patterns: [{
+          from: 'src/img',
+          to: 'img'
+        }]
+      }),
       new ImageminWebpackPlugin({
         test: /\.(jpe?g|png|gif|svg)$/i
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template : 'src/index.html'
       })
     ]
   };
